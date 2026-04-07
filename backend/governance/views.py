@@ -16,3 +16,16 @@ def cast_vote(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+def get_proposal_results(request, proposal_id):
+    votes = Vote.objects.filter(proposal_id=proposal_id)
+    total_votes = votes.count()
+    yes_votes = votes.filter(vote=True).count()
+    no_votes = votes.filter(vote=False).count()
+    return Response({
+        'proposal_id': proposal_id,
+        'total_votes': total_votes,
+        'yes': yes_votes,
+        'no': no_votes
+    })
