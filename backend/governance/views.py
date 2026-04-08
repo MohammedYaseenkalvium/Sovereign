@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Proposal, User, Vote
 from .serializers import ProposalSerializer,VoteSerializer
+from rest_framework import IsAuthenticated
+
 
 @api_view(['GET'])
 def get_proposals(request):
@@ -28,11 +30,13 @@ def cast_vote(request):
         return Response(serializer.data, status=201)
 
 @api_view(['GET'])
-def get_proposal_results(request, proposal_id):
-    user_id = request.GET.get('user')
+@permission_classes([IsAuthenticated])
+def get_proposals(request):
+    user = request.user  # from JWT
 
-    user = User.objects.get(id=user_id)
-    team = user.team
+    
+    custom_user = User.objects.get(name=user.username)
+    team = custom_user.team
 
     proposals = Proposal.objects.filter(team=team)
     serializer = ProposalSerializer(proposals, many=True)
