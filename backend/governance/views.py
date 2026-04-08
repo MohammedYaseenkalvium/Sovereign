@@ -19,6 +19,7 @@ def cast_vote(request):
 
 @api_view(['GET'])
 def get_proposal_results(request, proposal_id):
+    team_id = request.GET.get('team_id')
     votes = Vote.objects.filter(proposal_id=proposal_id)
     total_votes = votes.count()
     yes_votes = votes.filter(vote=True).count()
